@@ -1,0 +1,52 @@
+<div class="login-page">
+  <mat-card class="login-card">
+    <div class="login-brand">
+      <span class="brand-dot">P</span>
+      <div>
+        <h1>ProcureX</h1>
+        <p>Create your account</p>
+      </div>
+    </div>
+
+    <h2>Sign up</h2>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline">
+        <mat-label>Full name</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Company</mat-label>
+        <input matInput formControlName="company" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Phone</mat-label>
+        <input matInput formControlName="phone" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" />
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" class="login-btn">Create account</button>
+
+      <div class="signup-link">
+        Already have an account?
+        <a routerLink="/login">Login</a>
+      </div>
+    </form>
+  </mat-card>
+</div>

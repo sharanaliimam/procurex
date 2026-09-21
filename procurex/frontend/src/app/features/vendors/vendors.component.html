@@ -1,0 +1,93 @@
+<div class="page-header">
+  <h1>Vendor Management</h1>
+  <button mat-raised-button color="primary" (click)="openCreate()">
+    <mat-icon>add</mat-icon> New Vendor
+  </button>
+</div>
+
+<div class="toolbar-row">
+  <mat-form-field appearance="outline" style="width: 280px;">
+    <mat-label>Search by name / company / email</mat-label>
+    <input matInput [(ngModel)]="searchTerm" (keyup.enter)="load()" [ngModelOptions]="{standalone: true}" />
+  </mat-form-field>
+  <button mat-stroked-button (click)="load()">Search</button>
+</div>
+
+<mat-card class="form-card" *ngIf="showForm">
+  <h2>{{ editingId ? 'Edit Vendor' : 'New Vendor' }}</h2>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Vendor Name</mat-label>
+        <input matInput formControlName="vendorName" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Company</mat-label>
+        <input matInput formControlName="company" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Phone</mat-label>
+        <input matInput formControlName="phone" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Business Category</mat-label>
+        <mat-select formControlName="businessCategory">
+          <mat-option *ngFor="let c of categories" [value]="c">{{ c }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="form-actions">
+      <button mat-button type="button" (click)="cancel()">Cancel</button>
+      <button mat-raised-button color="primary" type="submit">Save</button>
+    </div>
+  </form>
+</mat-card>
+
+<mat-card>
+  <table mat-table [dataSource]="vendors" class="full-width-table" *ngIf="vendors.length; else empty">
+    <ng-container matColumnDef="vendorName">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let v">{{ v.vendorName }}</td>
+    </ng-container>
+    <ng-container matColumnDef="company">
+      <th mat-header-cell *matHeaderCellDef>Company</th>
+      <td mat-cell *matCellDef="let v">{{ v.company }}</td>
+    </ng-container>
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef>Email</th>
+      <td mat-cell *matCellDef="let v">{{ v.email }}</td>
+    </ng-container>
+    <ng-container matColumnDef="phone">
+      <th mat-header-cell *matHeaderCellDef>Phone</th>
+      <td mat-cell *matCellDef="let v">{{ v.phone }}</td>
+    </ng-container>
+    <ng-container matColumnDef="businessCategory">
+      <th mat-header-cell *matHeaderCellDef>Category</th>
+      <td mat-cell *matCellDef="let v">{{ v.businessCategory }}</td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let v"><span class="status-badge" [ngClass]="statusClass(v.status)">{{ v.status }}</span></td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let v">
+        <button mat-icon-button (click)="openEdit(v)" matTooltip="Edit"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button color="warn" (click)="remove(v)" matTooltip="Delete"><mat-icon>delete</mat-icon></button>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+  </table>
+  <ng-template #empty><div class="empty-state">No vendors found. Click "New Vendor" to add one.</div></ng-template>
+</mat-card>

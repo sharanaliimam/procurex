@@ -1,0 +1,104 @@
+<div class="page-header">
+  <h1>Reports & Search</h1>
+</div>
+
+<mat-card class="form-card" *ngIf="summary">
+  <h2>Tender Summary</h2>
+  <table class="full-width-table">
+    <tr><td>Total Tenders</td><td><strong>{{ summary.total }}</strong></td></tr>
+    <tr *ngFor="let s of summary.byStatus"><td>{{ s.status }}</td><td><strong>{{ s.count }}</strong></td></tr>
+  </table>
+</mat-card>
+
+<div class="dashboard-grid" *ngIf="summary">
+  <mat-card class="form-card">
+    <h2>Tenders by Status</h2>
+    <div class="mini-bar-chart" *ngIf="summary.byStatus.length; else noData1">
+      <div class="mini-bar-col" *ngFor="let s of summary.byStatus">
+        <div class="mini-bar-count">{{ s.count }}</div>
+        <div class="mini-bar" [style.height.px]="(s.count / maxCount(summary.byStatus)) * 120 + 10"></div>
+        <div class="mini-bar-label">{{ s.status }}</div>
+      </div>
+    </div>
+    <ng-template #noData1><div class="empty-state">No data.</div></ng-template>
+  </mat-card>
+
+  <mat-card class="form-card">
+    <h2>Tenders by Category</h2>
+    <div class="mini-bar-chart" *ngIf="summary.byCategory.length; else noData2">
+      <div class="mini-bar-col" *ngFor="let c of summary.byCategory">
+        <div class="mini-bar-count">{{ c.count }}</div>
+        <div class="mini-bar" [style.height.px]="(c.count / maxCount(summary.byCategory)) * 120 + 10"></div>
+        <div class="mini-bar-label">{{ c.category }}</div>
+      </div>
+    </div>
+    <ng-template #noData2><div class="empty-state">No data.</div></ng-template>
+  </mat-card>
+</div>
+
+<mat-card class="form-card" *ngIf="summary">
+  <h2>Procurement Amount by Month</h2>
+  <div class="mini-bar-chart" *ngIf="summary.byMonth.length; else noData3">
+    <div class="mini-bar-col" *ngFor="let m of summary.byMonth">
+      <div class="mini-bar-count">৳{{ m.totalAmount | number }}</div>
+      <div class="mini-bar" [style.height.px]="(m.totalAmount / maxAmount()) * 120 + 10"></div>
+      <div class="mini-bar-label">{{ m.label }}</div>
+    </div>
+  </div>
+  <ng-template #noData3><div class="empty-state">No data.</div></ng-template>
+</mat-card>
+
+<mat-card class="form-card">
+  <h2>Search & Filter Tenders</h2>
+  <div class="toolbar-row">
+    <mat-form-field appearance="outline" style="width: 240px;">
+      <mat-label>Search</mat-label>
+      <input matInput [(ngModel)]="searchTerm" (keyup.enter)="search()" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" style="width: 200px;">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="statusFilter" (selectionChange)="search()">
+        <mat-option value="">All</mat-option>
+        <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" style="width: 200px;">
+      <mat-label>Category</mat-label>
+      <mat-select [(ngModel)]="categoryFilter" (selectionChange)="search()">
+        <mat-option value="">All</mat-option>
+        <mat-option *ngFor="let c of categories" [value]="c">{{ c }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-stroked-button (click)="search()">Search</button>
+  </div>
+
+  <table mat-table [dataSource]="tenders" class="full-width-table" *ngIf="tenders.length; else empty">
+    <ng-container matColumnDef="tenderId">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let t">{{ t.tenderId }}</td>
+    </ng-container>
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef>Title</th>
+      <td mat-cell *matCellDef="let t">{{ t.title }}</td>
+    </ng-container>
+    <ng-container matColumnDef="category">
+      <th mat-header-cell *matHeaderCellDef>Category</th>
+      <td mat-cell *matCellDef="let t">{{ t.category }}</td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let t">{{ t.status }}</td>
+    </ng-container>
+    <ng-container matColumnDef="estimatedBudget">
+      <th mat-header-cell *matHeaderCellDef>Budget</th>
+      <td mat-cell *matCellDef="let t">৳{{ t.estimatedBudget | number }}</td>
+    </ng-container>
+    <ng-container matColumnDef="submissionDeadline">
+      <th mat-header-cell *matHeaderCellDef>Deadline</th>
+      <td mat-cell *matCellDef="let t">{{ t.submissionDeadline | date: 'mediumDate' }}</td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+  </table>
+  <ng-template #empty><div class="empty-state">No tenders match your search.</div></ng-template>
+</mat-card>

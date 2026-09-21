@@ -1,0 +1,105 @@
+<div class="page-header">
+  <h1>Dashboard</h1>
+</div>
+
+<div *ngIf="loading" class="empty-state">
+  <mat-spinner diameter="36" style="margin: 0 auto 12px;"></mat-spinner>
+  Loading dashboard...
+</div>
+
+<div *ngIf="error" class="empty-state">{{ error }}</div>
+
+<ng-container *ngIf="stats && !loading">
+  <div class="stat-cards">
+    <mat-card class="stat-card">
+      <div class="stat-label">Total Tenders</div>
+      <div class="stat-value">{{ stats.totalTenders }}</div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <div class="stat-label">Active Tenders</div>
+      <div class="stat-value">{{ stats.activeTenders }}</div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <div class="stat-label">Completed Tenders</div>
+      <div class="stat-value">{{ stats.completedTenders }}</div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <div class="stat-label">Registered Vendors</div>
+      <div class="stat-value">{{ stats.registeredVendors }}</div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <div class="stat-label">Pending Evaluations</div>
+      <div class="stat-value">{{ stats.pendingEvaluations }}</div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <div class="stat-label">Total Procurement Value</div>
+      <div class="stat-value">৳{{ stats.totalProcurementValue | number }}</div>
+    </mat-card>
+  </div>
+
+  <div class="dashboard-grid">
+    <div>
+      <mat-card class="form-card">
+        <h2>Recent Tenders</h2>
+        <table mat-table [dataSource]="stats.recentTenders" class="full-width-table" *ngIf="stats.recentTenders.length; else noRecent">
+          <ng-container matColumnDef="tenderId">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let t">{{ t.tenderId }}</td>
+          </ng-container>
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef>Title</th>
+            <td mat-cell *matCellDef="let t">{{ t.title }}</td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let t">
+              <span class="status-badge" [ngClass]="statusClass(t.status)">{{ t.status }}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="estimatedBudget">
+            <th mat-header-cell *matHeaderCellDef>Budget</th>
+            <td mat-cell *matCellDef="let t">৳{{ t.estimatedBudget | number }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="recentColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: recentColumns"></tr>
+        </table>
+        <ng-template #noRecent><div class="empty-state">No tenders yet. <a routerLink="/tenders">Create one</a>.</div></ng-template>
+      </mat-card>
+
+      <mat-card class="form-card">
+        <h2>Tender Status Breakdown</h2>
+        <div class="mini-bar-chart" *ngIf="stats.tendersByStatus.length; else noStatus">
+          <div class="mini-bar-col" *ngFor="let s of stats.tendersByStatus">
+            <div class="mini-bar-count">{{ s.count }}</div>
+            <div class="mini-bar" [style.height.px]="(s.count / maxCount()) * 120 + 10"></div>
+            <div class="mini-bar-label">{{ s.status }}</div>
+          </div>
+        </div>
+        <ng-template #noStatus><div class="empty-state">No data yet.</div></ng-template>
+      </mat-card>
+    </div>
+
+    <div>
+      <mat-card class="form-card">
+        <h2>Upcoming Deadlines</h2>
+        <table mat-table [dataSource]="stats.upcomingDeadlines" class="full-width-table" *ngIf="stats.upcomingDeadlines.length; else noDeadlines">
+          <ng-container matColumnDef="tenderId">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let t">{{ t.tenderId }}</td>
+          </ng-container>
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef>Title</th>
+            <td mat-cell *matCellDef="let t">{{ t.title }}</td>
+          </ng-container>
+          <ng-container matColumnDef="submissionDeadline">
+            <th mat-header-cell *matHeaderCellDef>Deadline</th>
+            <td mat-cell *matCellDef="let t">{{ t.submissionDeadline | date: 'mediumDate' }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="deadlineColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: deadlineColumns"></tr>
+        </table>
+        <ng-template #noDeadlines><div class="empty-state">No upcoming deadlines.</div></ng-template>
+      </mat-card>
+    </div>
+  </div>
+</ng-container>

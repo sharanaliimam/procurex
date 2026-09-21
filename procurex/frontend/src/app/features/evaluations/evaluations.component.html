@@ -1,0 +1,84 @@
+<div class="page-header">
+  <h1>Tender Evaluation</h1>
+  <button mat-raised-button color="primary" (click)="openCreate()">
+    <mat-icon>add</mat-icon> New Evaluation
+  </button>
+</div>
+<p style="color:#616161; margin-top:-12px;">Ranked by Overall Score = Technical × 60% + Financial × 40%</p>
+
+<mat-card class="form-card" *ngIf="showForm">
+  <h2>New Evaluation</h2>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="form-grid">
+      <mat-form-field appearance="outline" style="grid-column: 1 / -1;">
+        <mat-label>Bid</mat-label>
+        <mat-select formControlName="bid">
+          <mat-option *ngFor="let b of bids" [value]="b._id">
+            {{ nameOfTender(b.tender) }} — {{ nameOfVendor(b.vendor) }} (৳{{ b.quotedAmount | number }})
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Technical Score (0-100)</mat-label>
+        <input matInput type="number" formControlName="technicalScore" min="0" max="100" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Financial Score (0-100)</mat-label>
+        <input matInput type="number" formControlName="financialScore" min="0" max="100" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="grid-column: 1 / -1;">
+        <mat-label>Remarks</mat-label>
+        <textarea matInput formControlName="remarks" rows="2"></textarea>
+      </mat-form-field>
+    </div>
+    <div style="margin-bottom: 8px; font-weight: 600;">Calculated Overall Score: {{ previewScore }}</div>
+    <div class="form-actions">
+      <button mat-button type="button" (click)="cancel()">Cancel</button>
+      <button mat-raised-button color="primary" type="submit">Save</button>
+    </div>
+  </form>
+</mat-card>
+
+<mat-card>
+  <table mat-table [dataSource]="evaluations" class="full-width-table" *ngIf="evaluations.length; else empty">
+    <ng-container matColumnDef="tender">
+      <th mat-header-cell *matHeaderCellDef>Tender</th>
+      <td mat-cell *matCellDef="let e">{{ nameOfTender(e.tender) }}</td>
+    </ng-container>
+    <ng-container matColumnDef="vendor">
+      <th mat-header-cell *matHeaderCellDef>Vendor</th>
+      <td mat-cell *matCellDef="let e">{{ nameOfVendor(e.vendor) }}</td>
+    </ng-container>
+    <ng-container matColumnDef="technicalScore">
+      <th mat-header-cell *matHeaderCellDef>Technical</th>
+      <td mat-cell *matCellDef="let e">{{ e.technicalScore }}</td>
+    </ng-container>
+    <ng-container matColumnDef="financialScore">
+      <th mat-header-cell *matHeaderCellDef>Financial</th>
+      <td mat-cell *matCellDef="let e">{{ e.financialScore }}</td>
+    </ng-container>
+    <ng-container matColumnDef="overallScore">
+      <th mat-header-cell *matHeaderCellDef>Overall</th>
+      <td mat-cell *matCellDef="let e"><strong>{{ e.overallScore }}</strong></td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let e"><span class="status-badge" [ngClass]="statusClass(e.status)">{{ e.status }}</span></td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let e">
+        <button mat-icon-button color="primary" (click)="setStatus(e, 'Approved')" matTooltip="Approve" [disabled]="e.status === 'Approved'">
+          <mat-icon>check_circle</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="setStatus(e, 'Rejected')" matTooltip="Reject" [disabled]="e.status === 'Rejected'">
+          <mat-icon>cancel</mat-icon>
+        </button>
+        <button mat-icon-button (click)="remove(e)" matTooltip="Delete"><mat-icon>delete</mat-icon></button>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+  </table>
+  <ng-template #empty><div class="empty-state">No evaluations yet.</div></ng-template>
+</mat-card>

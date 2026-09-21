@@ -1,0 +1,16 @@
+<div class="page-header">
+  <h1>Notifications / Deadline Tracking</h1>
+</div>
+
+<mat-card>
+  <mat-nav-list *ngIf="notifications.length; else empty">
+    <mat-list-item *ngFor="let n of notifications" class="notification-item" [ngClass]="n.type">
+      <mat-icon matListItemIcon [color]="n.type === 'success' ? 'primary' : 'warn'">
+        {{ n.type === 'success' ? 'check_circle' : 'warning' }}
+      </mat-icon>
+      <div matListItemTitle>{{ n.message }}</div>
+      <div matListItemLine>{{ n.date | date: 'medium' }}</div>
+    </mat-list-item>
+  </mat-nav-list>
+  <ng-template #empty><div class="empty-state">No notifications right now. All clear!</div></ng-template>
+</mat-card>

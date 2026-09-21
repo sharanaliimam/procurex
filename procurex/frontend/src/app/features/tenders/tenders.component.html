@@ -1,0 +1,111 @@
+<div class="page-header">
+  <h1>{{ isAdmin ? 'Tender Management' : 'Tender Opportunities' }}</h1>
+  <button *ngIf="isAdmin" mat-raised-button color="primary" (click)="openCreate()">
+    <mat-icon>add</mat-icon> New Tender
+  </button>
+</div>
+
+<div class="toolbar-row">
+  <mat-form-field appearance="outline" style="width: 260px;">
+    <input matInput [(ngModel)]="searchTerm" placeholder="Search by title / ID" (keyup.enter)="load()" [ngModelOptions]="{standalone: true}" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" style="width: 200px;">
+    <mat-select [(ngModel)]="statusFilter" placeholder="Filter by status" [ngModelOptions]="{standalone: true}" (selectionChange)="load()">
+      <mat-option value="">All</mat-option>
+      <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <button mat-stroked-button (click)="load()">Search</button>
+</div>
+
+<mat-card class="form-card" *ngIf="showForm">
+  <h2>{{ editingId ? 'Edit Tender' : 'New Tender' }}</h2>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Tender ID</mat-label>
+        <input matInput formControlName="tenderId" placeholder="TND-104" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Title</mat-label>
+        <input matInput formControlName="title" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="category">
+          <mat-option *ngFor="let c of categories" [value]="c">{{ c }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Estimated Budget (৳)</mat-label>
+        <input matInput type="number" formControlName="estimatedBudget" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Publication Date</mat-label>
+        <input matInput type="date" formControlName="publicationDate" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Submission Deadline</mat-label>
+        <input matInput type="date" formControlName="submissionDeadline" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="grid-column: 1 / -1;">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" rows="2"></textarea>
+      </mat-form-field>
+    </div>
+    <div class="form-actions">
+      <button mat-button type="button" (click)="cancel()">Cancel</button>
+      <button mat-raised-button color="primary" type="submit">Save</button>
+    </div>
+  </form>
+</mat-card>
+
+<mat-card>
+  <table mat-table [dataSource]="tenders" class="full-width-table" *ngIf="tenders.length; else empty">
+    <ng-container matColumnDef="tenderId">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let t">{{ t.tenderId }}</td>
+    </ng-container>
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef>Title</th>
+      <td mat-cell *matCellDef="let t">{{ t.title }}</td>
+    </ng-container>
+    <ng-container matColumnDef="category">
+      <th mat-header-cell *matHeaderCellDef>Category</th>
+      <td mat-cell *matCellDef="let t">{{ t.category }}</td>
+    </ng-container>
+    <ng-container matColumnDef="estimatedBudget">
+      <th mat-header-cell *matHeaderCellDef>Budget</th>
+      <td mat-cell *matCellDef="let t">৳{{ t.estimatedBudget | number }}</td>
+    </ng-container>
+    <ng-container matColumnDef="submissionDeadline">
+      <th mat-header-cell *matHeaderCellDef>Deadline</th>
+      <td mat-cell *matCellDef="let t">{{ t.submissionDeadline | date: 'mediumDate' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let t"><span class="status-badge" [ngClass]="statusClass(t.status)">{{ t.status }}</span></td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let t">
+        <ng-container *ngIf="isAdmin; else browseOnly">
+          <button mat-icon-button (click)="openEdit(t)" matTooltip="Edit"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button color="warn" (click)="remove(t)" matTooltip="Delete"><mat-icon>delete</mat-icon></button>
+        </ng-container>
+        <ng-template #browseOnly>
+          <button mat-icon-button disabled matTooltip="View only"><mat-icon>visibility</mat-icon></button>
+        </ng-template>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+  </table>
+  <ng-template #empty><div class="empty-state">No tenders found. Click "New Tender" to create one.</div></ng-template>
+</mat-card>
