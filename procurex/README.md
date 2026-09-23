@@ -152,18 +152,3 @@ switch versions if you have it.
 
 ---
 
-## 7. For your viva / presentation
-
-Suggested demo order:
-1. Show the Dashboard (system overview).
-2. Create a Tender (CRUD + Reactive Forms).
-3. Add a Vendor.
-4. Submit a Bid for that tender from that vendor (shows the relationship).
-5. Evaluate the bid (Technical/Financial scores → auto-calculated Overall
-   Score) and Approve it.
-6. Upload a document against the tender.
-7. Show Notifications (deadline tracking, generated automatically).
-8. Show Reports (charts + search/filter).
-
-This walks through the full Tender → Bid → Evaluation → Award lifecycle,
-which is the core story of a procurement system.
